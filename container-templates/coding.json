@@ -1,0 +1,38 @@
+{
+  "template": {
+    "id": "coding",
+    "name": "Coding Agent / 编码专家",
+    "description": "代码开发专用容器",
+    "version": "1.0.0"
+  },
+
+  "container": {
+    "namePrefix": "openclaw-agent",
+    "image": "docker-openclaw-openclaw:latest",
+    "internalPort": 18789,
+    "healthCheck": {
+      "cmd": "curl -f http://127.0.0.1:18789/ || exit 1",
+      "interval": "30s",
+      "timeout": "10s",
+      "retries": 3
+    },
+    "restart": "unless-stopped"
+  },
+
+  "skills": [
+    "coding-agent",
+    "gh-issues",
+    "github",
+    "skill-creator"
+  ],
+
+  "workspace": {
+    "directories": ["src", "tests", "output", "memory"]
+  },
+
+  "config": {
+    "bind": "loopback",
+    "authMode": "token",
+    "nativeSkills": "auto"
+  }
+}

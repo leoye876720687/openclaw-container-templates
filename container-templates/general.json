@@ -1,0 +1,33 @@
+{
+  "template": {
+    "id": "general",
+    "name": "General Purpose / 通用",
+    "description": "通用目的容器",
+    "version": "1.0.0"
+  },
+
+  "container": {
+    "namePrefix": "openclaw-agent",
+    "image": "docker-openclaw-openclaw:latest",
+    "internalPort": 18789,
+    "healthCheck": {
+      "cmd": "curl -f http://127.0.0.1:18789/ || exit 1",
+      "interval": "30s",
+      "timeout": "10s",
+      "retries": 3
+    },
+    "restart": "unless-stopped"
+  },
+
+  "skills": [],
+
+  "workspace": {
+    "directories": ["input", "output", "memory"]
+  },
+
+  "config": {
+    "bind": "loopback",
+    "authMode": "token",
+    "nativeSkills": "auto"
+  }
+}
