@@ -305,9 +305,34 @@ STOPSCRIPT
       --health-retries=3 \
       "$image"
     
-    # 等待并验证
+    # 等待容器启动
     log_info "等待容器启动..."
     sleep 10
+    
+    # 注入 models.json 配置（避免默认使用 anthropic）
+    log_info "注入模型配置..."
+    local aliyun_api_key="${ALIBABA_CLOUD_API_KEY:-sk-3b4d0ebb9dfc42839b18af33321921a2}"
+    cat > /tmp/models-${container_name}.json << MODELSEOF
+{
+  "providers": {
+    "aliyun-qwen": {
+      "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "apiKey": "${aliyun_api_key}",
+      "api": "openai-completions",
+      "models": [{
+        "id": "qwen3.5-plus",
+        "name": "qwen3.5-plus",
+        "contextWindow": 131072,
+        "maxTokens": 8192,
+        "input": ["text"],
+        "reasoning": false
+      }]
+    }
+  }
+}
+MODELSEOF
+    docker cp "/tmp/models-${container_name}.json" "$container_name:/home/openclaw/.openclaw/.openclaw/models.json"
+    rm -f "/tmp/models-${container_name}.json"
     
     local status=$(docker inspect -f '{{.State.Health.Status}}' "$container_name" 2>/dev/null || echo "unknown")
     
