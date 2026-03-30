@@ -291,12 +291,13 @@ STOPSCRIPT
     
     # 创建容器
     log_info "创建 Docker 容器..."
+    # 注意：不直接挂载 openclaw.json，避免权限问题
+    # 容器启动后会自动生成默认配置，可通过 WebSocket API 修改
     docker run -d \
       --name "$container_name" \
       -p "${external_port}:${internal_port}" \
       -v "$skills_dir:/app/skills:ro" \
       -v "$workspace_dir:/app/workspace" \
-      -v "$config_dir/openclaw.json:/home/openclaw/.openclaw/.openclaw/openclaw.json:ro" \
       --restart unless-stopped \
       --health-cmd="curl -f http://127.0.0.1:${internal_port}/ || exit 1" \
       --health-interval=30s \
